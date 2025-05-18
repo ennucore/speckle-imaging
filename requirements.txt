@@ -3,3 +3,5 @@ numpy>=1.20.0
 matplotlib>=3.4.0
 jupyter>=1.0.0
 pillow>=8.0.0 
+rawpy>=0.14.0
+scikit-image>=0.18.0

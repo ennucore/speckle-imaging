@@ -67,7 +67,7 @@ def preview_camera(camera_idx=None):
 
 # Get the last camera by default
 if available_cameras:
-    default_camera_idx = available_cameras[1][0]
+    default_camera_idx = available_cameras[0][0]
     print(f"Using camera {default_camera_idx} by default")
     cap, preview_frame = preview_camera(default_camera_idx)
 else:
@@ -146,20 +146,30 @@ def compute_average_image(batch):
 # %%
 batch3 = capture_image_batch(cap)
 # %%
-def plot_normalized_difference(img1, img2, normalize_intensity=True, title_postfix=""):
+def plot_normalized_difference(img1, img2, normalize_intensity=True, title_postfix="", threshold=None):
     if isinstance(img1, list):
         img1 = compute_average_image(img1)
     if isinstance(img2, list):
         img2 = compute_average_image(img2)
     if normalize_intensity:
-        img1 = img1 / np.mean(img1)
-        img2 = img2 / np.mean(img2)
+        img1 = img1 / np.median(img1)
+        img2 = img2 / np.median(img2)
 
     diff_img = cv2.absdiff(img1, img2)
     log_diff = np.log1p(diff_img[:, :].astype(np.float32))
     log_diff = cv2.normalize(log_diff, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-    plt.imshow(cv2.cvtColor(log_diff, cv2.COLOR_BGR2RGB))
-    plt.title(f"Difference {title_postfix}")
+    
+    # Apply thresholding if a threshold value is provided
+    if threshold is not None:
+        _, thresholded = cv2.threshold(log_diff, threshold, 255, cv2.THRESH_BINARY)
+        display_img = thresholded
+        title_suffix = f"{title_postfix} (Threshold={threshold})"
+    else:
+        display_img = log_diff
+        title_suffix = title_postfix
+    
+    plt.imshow(cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB))
+    plt.title(f"Difference {title_suffix}")
     plt.axis('off')
 
 

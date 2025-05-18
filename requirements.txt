@@ -5,3 +5,4 @@ jupyter>=1.0.0
 pillow>=8.0.0 
 rawpy>=0.14.0
 scikit-image>=0.18.0
+typer
